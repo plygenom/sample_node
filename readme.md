@@ -60,7 +60,12 @@ Remove-ECRRepository -RepositoryName $RepositoryName
 
 ```powershell
 ** 1. create launch config**
-New-ASLaunchConfiguration -LaunchConfigurationName test-lc -InstanceType "t2.micro" -ImageId "ami-0970010f37c4f9c8d" -SecurityGroup "sg-082bb5832a24d0333" -IamInstanceProfile "ecsInstanceRole" -AssociatePublicIpAddress $true -EbsOptimized $true
+--- create userdata.txt file with ---
+#!/bin/bash
+echo ECS_CLUSTER=test-cluster >> /etc/ecs/ecs.config;echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config;
+--------
+$userdata=Get-Content ".\userdata.txt";$Bytes=[System.Text.Encoding]::UTF8.GetBytes($userdata);$Encoded_userdata = [System.Convert]::ToBase64String($Bytes)
+New-ASLaunchConfiguration -LaunchConfigurationName test-lc -InstanceType "t2.micro" -ImageId "ami-0970010f37c4f9c8d" -SecurityGroup "sg-082bb5832a24d0333" -IamInstanceProfile "ecsInstanceRole" -AssociatePublicIpAddress $true -EbsOptimized $true -UserData $Encoded_userdata
 
 **2.create Auto-scaling group**
 New-ASAutoScalingGroup -AutoScalingGroupName test-asg -LaunchConfigurationName test-lc  -DesiredCapacity 1 -MinSize 1 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c")
