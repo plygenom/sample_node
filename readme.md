@@ -44,3 +44,16 @@ docker tag sample_node:latest ${ECRRepository}:latest
 docker push ${ECRRepository}:latest
 
 ```
+
+##  To Remove Image from ECR repo**
+
+```powershell
+$ImageId=(Get-ECRImage -RepositoryName $RepositoryName)
+Remove-ECRImageBatch -RepositoryName $RepositoryName -ImageId $ImageId
+```
+
+##  To Remove ECR repo from ECR repo**
+
+```
+Remove-ECRRepository -RepositoryName $RepositoryName
+```
