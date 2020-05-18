@@ -78,14 +78,12 @@ Update-ASAutoScalingGroup -AutoScalingGroupName test-asg -VPCZoneIdentifier @("s
 Update-ASAutoScalingGroup -AutoScalingGroupName test-asg -VPCZoneIdentifier "subnet-070a2407837b46f8d"
 ```
 
-## ECS resource 
-```
-$ASG_ARN=(Get-ASAutoScalingGroup).AutoScalingGroupARN
-New-ECSCapacityProvider -Name test-CapacityProvider -AutoScalingGroupProvider_AutoScalingGroupArn $ASG_ARN -ManagedScaling_MaximumScalingStepSize 1 -ManagedScaling_MinimumScalingStepSize 1 -ManagedScaling_Status ENABLED -ManagedScaling_TargetCapacity 100
-```
-## ECS Cluster
+## ECS resource and Cluster creation
 ```powershell
-New-ECSCluster -ClusterName test-cluster -CapacityProvider test-CapacityProvider -DefaultCapacityProviderStrategy
-Write-ECSClusterCapacityProvider -Cluster test-cluster  -CapacityProvider test-CapacityProvider -DefaultCapacityProviderStrategy @{capacityProvider="test-CapacityProvider";weight=1;base=1}
+$ASG_ARN=(Get-ASAutoScalingGroup).AutoScalingGroupARN
+
+New-ECSCapacityProvider -Name test-CP -AutoScalingGroupProvider_AutoScalingGroupArn $ASG_ARN -ManagedScaling_MaximumScalingStepSize 1 -ManagedScaling_MinimumScalingStepSize 1 -ManagedScaling_Status ENABLED -ManagedScaling_TargetCapacity 100
+
+New-ECSCluster -ClusterName test-cluster -CapacityProvider test-CP -DefaultCapacityProviderStrategy @{capacityProvider="test-CP";weight=1;base=1}
 
 ```
