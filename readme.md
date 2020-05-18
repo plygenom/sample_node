@@ -73,9 +73,6 @@ aws autoscaling describe-launch-configurations --launch-configuration-names test
 New-ASAutoScalingGroup -AutoScalingGroupName test-asg -LaunchConfigurationName test-lc  -DesiredCapacity 1 -MinSize 1 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c") -VPCZoneIdentifier 'subnet-0d0a667209c85e337,subnet-070a2407837b46f8d'
 
 aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names test-asg --region ap-southeast-2
-
-Update-ASAutoScalingGroup -AutoScalingGroupName test-asg -VPCZoneIdentifier @("subnet-0d0a667209c85e337", "subnet-070a2407837b46f8d")
-Update-ASAutoScalingGroup -AutoScalingGroupName test-asg -VPCZoneIdentifier "subnet-070a2407837b46f8d"
 ```
 
 ## ECS resource and Cluster creation
