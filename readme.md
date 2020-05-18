@@ -8,7 +8,7 @@ git clone <<repo>>
 cd << repo>>
 docker --version
 docker build -t sample_node:latest .
-docker images --filter=reference='sample*
+docker images --filter=reference='sample*'
 ```
 
 ## To run locally 
@@ -52,7 +52,7 @@ $ImageId=(Get-ECRImage -RepositoryName $RepositoryName)
 Remove-ECRImageBatch -RepositoryName $RepositoryName -ImageId $ImageId
 ```
 
-##  To Remove ECR repo from ECR repo**
+##  To Remove ECR repo
 
 ```
 Remove-ECRRepository -RepositoryName $RepositoryName
