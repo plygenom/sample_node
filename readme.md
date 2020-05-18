@@ -64,6 +64,9 @@ New-ASLaunchConfiguration -LaunchConfigurationName test-lc -InstanceType "t2.mic
 
 **2.create Auto-scaling group**
 New-ASAutoScalingGroup -AutoScalingGroupName test-asg -LaunchConfigurationName test-lc  -DesiredCapacity 1 -MinSize 1 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c")
+
+Update-ASAutoScalingGroup -AutoScalingGroupName test-asg -VPCZoneIdentifier @("subnet-0d0a667209c85e337", "subnet-070a2407837b46f8d")
+Update-ASAutoScalingGroup -AutoScalingGroupName test-asg -VPCZoneIdentifier "subnet-070a2407837b46f8d"
 ```
 
 ## ECS resource 
