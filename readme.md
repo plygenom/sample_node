@@ -67,3 +67,9 @@ New-ASLaunchConfiguration -LaunchConfigurationName test-lc -InstanceType "t2.mic
 **2.create Auto-scaling group**
 New-ASAutoScalingGroup -AutoScalingGroupName test-asg -LaunchConfigurationName test-lc  -DesiredCapacity 1 -MinSize 1 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c")
 ```
+
+# ECS cluster 
+```
+$ASG_ARN=(Get-ASAutoScalingGroup).AutoScalingGroupARN
+New-ECSCapacityProvider -Name test-CapacityProvider -AutoScalingGroupProvider_AutoScalingGroupArn $ASG_ARN -ManagedScaling_MaximumScalingStepSize 1 -ManagedScaling_MinimumScalingStepSize 1 -ManagedScaling_Status ENABLED -ManagedScaling_TargetCapacity 100
+```
