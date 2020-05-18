@@ -61,5 +61,9 @@ Remove-ECRRepository -RepositoryName $RepositoryName
 # Create ASG 
 
 ```
+** 1. create launch config**
 New-ASLaunchConfiguration -LaunchConfigurationName test-lc -InstanceType "t2.micro" -ImageId "ami-0970010f37c4f9c8d" -SecurityGroup "sg-082bb5832a24d0333" -IamInstanceProfile "ecsInstanceRole" -AssociatePublicIpAddress $true -EbsOptimized $true
+
+**2.create Auto-scaling group**
+New-ASAutoScalingGroup -AutoScalingGroupName test-asg -LaunchConfigurationName test-lc  -DesiredCapacity 1 -MinSize 1 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c")
 ```
