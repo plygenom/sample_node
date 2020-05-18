@@ -1,7 +1,7 @@
 # Docker + Node 
 Sample node application using docker.
 
-## Setup
+# Docker Image build
 
 ```powershell
 git clone <<repo>>
