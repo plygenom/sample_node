@@ -65,22 +65,25 @@ Remove-ECRRepository -RepositoryName $RepositoryName
 echo ECS_CLUSTER=test-cluster >> /etc/ecs/ecs.config;echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config;
 --------
 $userdata=Get-Content ".\userdata.txt";$Bytes=[System.Text.Encoding]::UTF8.GetBytes($userdata);$Encoded_userdata = [System.Convert]::ToBase64String($Bytes)
-New-ASLaunchConfiguration -LaunchConfigurationName test-lc -InstanceType "t2.micro" -ImageId "ami-0970010f37c4f9c8d" -SecurityGroup "sg-082bb5832a24d0333" -KeyName "MyKeyPair" -IamInstanceProfile "ecsInstanceRole" -AssociatePublicIpAddress $true -UserData $Encoded_userdata
+New-ASLaunchConfiguration -LaunchConfigurationName node-lc -InstanceType "t2.micro" -ImageId "ami-0970010f37c4f9c8d" -SecurityGroup "sg-082bb5832a24d0333" -KeyName "MyKeyPair" -IamInstanceProfile "ecsInstanceRole" -AssociatePublicIpAddress $true -UserData $Encoded_userdata
 
-aws autoscaling describe-launch-configurations --launch-configuration-names test-lc --region ap-southeast-2
+aws autoscaling describe-launch-configurations --launch-configuration-names node-lc --region ap-southeast-2
 
 **2.create Auto-scaling group**
-New-ASAutoScalingGroup -AutoScalingGroupName test-asg -LaunchConfigurationName test-lc  -DesiredCapacity 1 -MinSize 1 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c") -VPCZoneIdentifier 'subnet-0d0a667209c85e337,subnet-070a2407837b46f8d'
+New-ASAutoScalingGroup -AutoScalingGroupName node-asg -LaunchConfigurationName node-lc  -DesiredCapacity 1 -MinSize 1 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c") -VPCZoneIdentifier 'subnet-0d0a667209c85e337,subnet-070a2407837b46f8d'
 
-aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names test-asg --region ap-southeast-2
+aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names node-asg --region ap-southeast-2
 ```
 
 ## ECS resource and Cluster creation
 ```powershell
-$ASG_ARN=(Get-ASAutoScalingGroup).AutoScalingGroupARN
+$ASG_ARN=(Get-ASAutoScalingGroup -AutoScalingGroupName node-asg).AutoScalingGroupARN
 
-New-ECSCapacityProvider -Name test-CP -AutoScalingGroupProvider_AutoScalingGroupArn $ASG_ARN -ManagedScaling_MaximumScalingStepSize 1 -ManagedScaling_MinimumScalingStepSize 1 -ManagedScaling_Status ENABLED -ManagedScaling_TargetCapacity 100
+New-ECSCapacityProvider -Name node-cp -AutoScalingGroupProvider_AutoScalingGroupArn $ASG_ARN -ManagedScaling_MaximumScalingStepSize 1 -ManagedScaling_MinimumScalingStepSize 1 -ManagedScaling_Status ENABLED -ManagedScaling_TargetCapacity 100
 
-New-ECSCluster -ClusterName test-cluster -CapacityProvider test-CP -DefaultCapacityProviderStrategy @{capacityProvider="test-CP";weight=1;base=1}
+New-ECSCluster -ClusterName node-cluster -CapacityProvider node-cp -DefaultCapacityProviderStrategy @{capacityProvider="node-cp";weight=1;base=1}
+
+aws ecs describe-clusters --clusters node-cluster --include ATTACHMENTS --region ap-southeast-2
+aws ecs put-cluster-capacity-providers --cluster node-cluster --capacity-providers node-cp --default-capacity-provider-strategy capacityProvider=node-cp,weight=1,base=1
 
 ```
