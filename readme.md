@@ -66,17 +66,18 @@ Get-EC2KeyPair -KeyName MyKeyPair
 Get-EC2SecurityGroup -GroupId sg-082bb5832a24d0333
 
 ** 1. create launch config**
+$IAM_ARN=(Get-IAMInstanceProfileForRole -RoleName ecsInstanceRole).Arn
 --- create userdata.txt file with ---
 #!/bin/bash
-echo ECS_CLUSTER=test-cluster >> /etc/ecs/ecs.config;echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config;
+echo ECS_CLUSTER=node-cluster >> /etc/ecs/ecs.config;echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config;
 --------
 $userdata=Get-Content ".\userdata.txt";$Bytes=[System.Text.Encoding]::UTF8.GetBytes($userdata);$Encoded_userdata = [System.Convert]::ToBase64String($Bytes)
-New-ASLaunchConfiguration -LaunchConfigurationName node-lc -InstanceType "t2.micro" -ImageId "ami-029bf83e14803c25f" -SecurityGroup "sg-082bb5832a24d0333" -KeyName "MyKeyPair" -IamInstanceProfile "ecsInstanceRole" -AssociatePublicIpAddress $true -UserData $Encoded_userdata
+New-ASLaunchConfiguration -LaunchConfigurationName node-lc -InstanceType "t2.micro" -ImageId "ami-029bf83e14803c25f" -SecurityGroup "sg-082bb5832a24d0333" -KeyName "MyKeyPair" -IamInstanceProfile $IAM_ARN -AssociatePublicIpAddress $true -UserData $Encoded_userdata
 
 aws autoscaling describe-launch-configurations --launch-configuration-names node-lc --region ap-southeast-2
 
 **2.create Auto-scaling group**
-New-ASAutoScalingGroup -AutoScalingGroupName node-asg -LaunchConfigurationName node-lc  -DesiredCapacity 1 -MinSize 1 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c") -VPCZoneIdentifier 'subnet-0d0a667209c85e337,subnet-070a2407837b46f8d'
+New-ASAutoScalingGroup -AutoScalingGroupName node-asg -LaunchConfigurationName node-lc -MinSize 0 -MaxSize 2 -AvailabilityZone @("ap-southeast-2a", "ap-southeast-2c") -VPCZoneIdentifier 'subnet-0d0a667209c85e337,subnet-070a2407837b46f8d' -NewInstancesProtectedFromScaleIn $true
 
 aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names node-asg --region ap-southeast-2
 ```
@@ -97,7 +98,7 @@ New-ECSCapacityProvider -Name node-cp -AutoScalingGroupProvider_AutoScalingGroup
 New-ECSCluster -ClusterName node-cluster -CapacityProvider node-cp -DefaultCapacityProviderStrategy @{capacityProvider="node-cp";weight=1;base=1}
 
 aws ecs describe-clusters --clusters node-cluster --include ATTACHMENTS --region ap-southeast-2
-aws ecs put-cluster-capacity-providers --cluster node-cluster --capacity-providers node-cp --default-capacity-provider-strategy capacityProvider=node-cp,weight=1,base=1
+aws ecs put-cluster-capacity-providers --cluster node-cluster --capacity-providers node-cp1 --default-capacity-provider-strategy capacityProvider=node-cp,weight=1,base=1
 
 ```
 
@@ -105,4 +106,29 @@ aws ecs put-cluster-capacity-providers --cluster node-cluster --capacity-provide
 
 ```powershell
 Remove-ECSCluster -Cluster node-cluster -force
+```
+```
+Get-Content taskdef.json
+{
+    "family": "node-taskdef",
+    "containerDefinitions": [
+      {
+        "essential": true,
+        "image": "873169456713.dkr.ecr.ap-southeast-2.amazonaws.com/sample_node:latest",
+        "memory": 1,
+        "name": "test-container",
+        "portMappings": [
+           {
+                    "hostPort": 80,
+                    "containerPort": 8080,
+                    "protocol": "tcp"
+                }
+            ]
+      }
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ]
+}
+aws ecs register-task-definition --cli-input-json file://taskdef.json --region ap-southeast-2
 ```
