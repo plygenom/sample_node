@@ -59,6 +59,12 @@ Remove-ECRRepository -RepositoryName $RepositoryName
 # Create ASG 
 
 ```powershell
+
+*** verify below details *** if not create them 
+Get-IAMInstanceProfileForRole -RoleName ecsInstanceRole
+Get-EC2KeyPair -KeyName MyKeyPair
+Get-EC2SecurityGroup -GroupId sg-082bb5832a24d0333
+
 ** 1. create launch config**
 --- create userdata.txt file with ---
 #!/bin/bash
@@ -75,6 +81,13 @@ New-ASAutoScalingGroup -AutoScalingGroupName node-asg -LaunchConfigurationName n
 aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names node-asg --region ap-southeast-2
 ```
 
+###  To Remove ASG and LC**
+
+```powershell
+Remove-ASLaunchConfiguration -LaunchConfigurationName node-lc -force
+Remove-ASAutoScalingGroup -AutoScalingGroupName node-asg -ForceDelete $true -force
+```
+
 ## ECS resource and Cluster creation
 ```powershell
 $ASG_ARN=(Get-ASAutoScalingGroup -AutoScalingGroupName node-asg).AutoScalingGroupARN
@@ -86,4 +99,10 @@ New-ECSCluster -ClusterName node-cluster -CapacityProvider node-cp -DefaultCapac
 aws ecs describe-clusters --clusters node-cluster --include ATTACHMENTS --region ap-southeast-2
 aws ecs put-cluster-capacity-providers --cluster node-cluster --capacity-providers node-cp --default-capacity-provider-strategy capacityProvider=node-cp,weight=1,base=1
 
+```
+
+###  To Remove ECS cluster**
+
+```powershell
+Remove-ECSCluster -Cluster node-cluster -force
 ```
