@@ -107,7 +107,27 @@ aws ecs put-cluster-capacity-providers --cluster node-cluster --capacity-provide
 ```powershell
 Remove-ECSCluster -Cluster node-cluster -force
 ```
+# AWS cli approach 
 ```
+PS C:\muthu> Get-Content capacityprovider.json
+{
+    "name": "node-capacityprovider",
+    "autoScalingGroupProvider": {
+        "autoScalingGroupArn": "arn:aws:autoscaling:ap-southeast-2:873169456713:autoScalingGroup:38dcf7d2-5510-42ee-8f69-05c7c656e659:autoScaling
+GroupName/node-asg",
+        "managedScaling": {
+            "status": "ENABLED",
+            "targetCapacity": 100,
+            "minimumScalingStepSize": 1,
+            "maximumScalingStepSize": 100
+        },
+        "managedTerminationProtection": "ENABLED"
+    }
+}
+
+aws ecs create-capacity-provider --cli-input-json file://capacityprovider.json --region ap-southeast-2
+aws ecs create-cluster --cluster-name node-cluster --capacity-providers node-capacityprovider --default-capacity-provider-strategy capacityProvider=node-capacityprovider,weight=1 --region ap-southeast-2
+
 Get-Content taskdef.json
 {
     "family": "node-taskdef",
