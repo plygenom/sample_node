@@ -152,3 +152,57 @@ Get-Content taskdef.json
 }
 aws ecs register-task-definition --cli-input-json file://taskdef.json --region ap-southeast-2
 ```
+
+#powershell history
+
+```powershell
+ 287 aws iam list-instance-profiles-for-role --role-name ecsInstanceRole
+ 288 notepad CLItutorial-launchconfig.json
+ 289 notepad userdata.txt
+ 290 aws autoscaling create-launch-configuration --cli-input-json file://CLItutorial-launchconfig.json --user-data file://userdata.txt --regi...
+ 291 notepad CLItutorial-launchconfig.json
+ 292 aws autoscaling create-launch-configuration --cli-input-json file://CLItutorial-launchconfig.json --user-data file://userdata.txt --regi...
+ 293 notepad CLItutorial-launchconfig.json
+ 294 notepad CLItutorial-launchconfig.json
+ 295 aws autoscaling create-launch-configuration --cli-input-json file://CLItutorial-launchconfig.json --user-data file://userdata.txt --regi...
+ 296 aws autoscaling describe-launch-configurations --launch-configuration-names CLItutorial-launchconfig --region ap-southeast-2
+ 297 aws iam list-instance-profiles-for-role --role-name AWSServiceRoleForAutoScaling
+ 298 aws iam --help
+ 299 notepad CLItutorial-asgconfig.json
+ 300 aws autoscaling create-auto-scaling-group --auto-scaling-group-name CLItutorial-asg --cli-input-json file://CLItutorial-asgconfig.json -...
+ 301 notepad CLItutorial-asgconfig.json
+ 302 aws autoscaling create-auto-scaling-group --auto-scaling-group-name CLItutorial-asg --cli-input-json file://CLItutorial-asgconfig.json -...
+ 303 aws autoscaling create-auto-scaling-group --auto-scaling-group-name CLItutorial-asg-burst --cli-input-json file://CLItutorial-asgconfig....
+ 304 aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names CLItutorial-asg CLItutorial-asg-burst --region ap-southeast-2
+ 305 notepad CLItutorial-capacityprovider.json
+ 306 (Get-ASAutoScalingGroup -AutoScalingGroupName CLItutorial-asg).AutoScalingGroupARN
+ 307 (Get-ASAutoScalingGroup -AutoScalingGroupName CLItutorial-asg-burst).AutoScalingGroupARN
+ 308 aws ecs create-capacity-provider --cli-input-json file://CLItutorial-capacityprovider.json --region ap-southeast-2
+ 309 notepad CLItutorial-capacityprovider-burst.json
+ 310 aws ecs create-capacity-provider --cli-input-json file://CLItutorial-capacityprovider-burst.json --region ap-southeast-2
+ 311 aws ecs create-cluster --cluster-name CLItutorial-cluster --capacity-providers CLItutorial-capacityprovider CLItutorial-capacityprovider...
+ 312 aws ecs describe-clusters --clusters CLItutorial-cluster --include ATTACHMENTS --region ap-southeast-2
+ 313 history
+ 314 Get-Alias grep
+ 315 Get-Alias ls
+ 316 Get-Alias grep
+ 317 history | Select-String "register"
+ 318 aws ecs register-task-definition --cli-input-json file://taskdef.json --region ap-southeast-2
+ 319 aws ecs run-task --cluster CLItutorial-cluster --count 2 --task-definition node-taskdef:1 --region ap-southeast-2
+ 320 aws ecs run-task --cluster CLItutorial-cluster --count 2 --task-definition node-taskdef:3 --region ap-southeast-2
+ 321 aws ecs describe-clusters --clusters CLItutorial-cluster --include ATTACHMENTS --region ap-southeast-2
+ 322 aws ecs list-tasks --cluster CLItutorial-cluster --region ap-southeast-2
+ 323 aws ecs stop-task --cluster CLItutorial-cluster --task 77001979-c138-489b-bc1e-596c73b28b81 --region ap-southeast-2
+ 324 aws ecs stop-task --cluster CLItutorial-cluster --task a6990fb2-9534-4454-b204-3219e23d0f64 --region ap-southeast-2
+ 325 aws ecs run-task --cluster CLItutorial-cluster --count 2 --task-definition node-taskdef:3 --region ap-southeast-2
+ 326 aws ecs describe-clusters --clusters CLItutorial-cluster --include ATTACHMENTS --region ap-southeast-2
+ 327 aws autoscaling delete-auto-scaling-group --auto-scaling-group-name CLItutorial-asg --force-delete --region ap-southeast-2
+ 328 aws autoscaling delete-auto-scaling-group --auto-scaling-group-name CLItutorial-asg-burst --force-delete --region ap-southeast-2
+ 329 aws ecs delete-cluster --cluster CLItutorial-cluster --region ap-southeast-2
+ 330 aws ecs delete-cluster --cluster CLItutorial-cluster --region ap-southeast-2
+ 331 clear-host
+
+
+PS C:\muthu>
+
+```
