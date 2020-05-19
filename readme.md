@@ -71,7 +71,7 @@ Get-EC2SecurityGroup -GroupId sg-082bb5832a24d0333
 echo ECS_CLUSTER=test-cluster >> /etc/ecs/ecs.config;echo ECS_BACKEND_HOST= >> /etc/ecs/ecs.config;
 --------
 $userdata=Get-Content ".\userdata.txt";$Bytes=[System.Text.Encoding]::UTF8.GetBytes($userdata);$Encoded_userdata = [System.Convert]::ToBase64String($Bytes)
-New-ASLaunchConfiguration -LaunchConfigurationName node-lc -InstanceType "t2.micro" -ImageId "ami-0970010f37c4f9c8d" -SecurityGroup "sg-082bb5832a24d0333" -KeyName "MyKeyPair" -IamInstanceProfile "ecsInstanceRole" -AssociatePublicIpAddress $true -UserData $Encoded_userdata
+New-ASLaunchConfiguration -LaunchConfigurationName node-lc -InstanceType "t2.micro" -ImageId "ami-029bf83e14803c25f" -SecurityGroup "sg-082bb5832a24d0333" -KeyName "MyKeyPair" -IamInstanceProfile "ecsInstanceRole" -AssociatePublicIpAddress $true -UserData $Encoded_userdata
 
 aws autoscaling describe-launch-configurations --launch-configuration-names node-lc --region ap-southeast-2
 
