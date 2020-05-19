@@ -180,7 +180,8 @@ aws ecs register-task-definition --cli-input-json file://taskdef.json --region a
  308 aws ecs create-capacity-provider --cli-input-json file://CLItutorial-capacityprovider.json --region ap-southeast-2
  309 notepad CLItutorial-capacityprovider-burst.json
  310 aws ecs create-capacity-provider --cli-input-json file://CLItutorial-capacityprovider-burst.json --region ap-southeast-2
- 311 aws ecs create-cluster --cluster-name CLItutorial-cluster --capacity-providers CLItutorial-capacityprovider CLItutorial-capacityprovider...
+ 311 aws ecs create-cluster --cluster-name CLItutorial-cluster --capacity-providers CLItutorial-capacityprovider CLItutorial-        capacityprovider-burst --default-capacity-provider-strategy capacityProvider=CLItutorial-capacityprovider,weight=1 capacityProvider=CLItutorial-capacityprovider-burst,weight=1 --region ap-southeast-2
+
  312 aws ecs describe-clusters --clusters CLItutorial-cluster --include ATTACHMENTS --region ap-southeast-2
  313 history
  314 Get-Alias grep
